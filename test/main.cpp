@@ -168,13 +168,33 @@ namespace {
 		ASSERT_EQ(7, exp.endPos);
 	}
 
+	TEST(Digits, calc_5) {
+		calc::Expression exp("12345678");
+
+		long long res = exp.calcDigits();
+
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(12345678, res);
+		ASSERT_EQ(7, exp.endPos);
+	}
+
 	TEST(Digits, calc_failed_1) {
 		calc::Expression exp("+1383");
 
 		long long res = exp.calcDigits();
 
 		ASSERT_EQ(0, exp.error.pos);
-		ASSERT_NE(0, exp.error.code);
+		ASSERT_EQ(101, exp.error.code);
+		ASSERT_EQ(0, res);
+	}
+
+	TEST(Digits, calc_failed_2) {
+		calc::Expression exp("123456789");
+
+		long long res = exp.calcDigits();
+
+		ASSERT_EQ(0, exp.error.pos);
+		ASSERT_EQ(102, exp.error.code);
 		ASSERT_EQ(0, res);
 	}
 
@@ -455,4 +475,33 @@ namespace {
 		ASSERT_EQ(21, exp.endPos);
 	}
 
+	TEST(Calculate, calc_4) {
+		calc::Expression exp("(((((((1)))))))");
+
+		long long res = exp.calc();
+
+		ASSERT_EQ(1, res);
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(14, exp.endPos);
+	}
+
+	TEST(Calculate, calc_5) {
+		calc::Expression exp("((((((1+1)*((2)))))))*(2)");
+
+		long long res = exp.calc();
+
+		ASSERT_EQ(8, res);
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(24, exp.endPos);
+	}
+
+	TEST(Calculate, calc_6) {
+		calc::Expression exp("12345678*12345678");
+
+		long long res = exp.calc();
+
+		ASSERT_EQ(152415765279684, res);
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(16, exp.endPos);
+	}
 }

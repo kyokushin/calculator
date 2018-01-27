@@ -118,7 +118,13 @@ long long calc::Expression::calcDigits() {
 	else {
 		endPos = end - 1;
 	}
-	const string valStr = e.substr(startPos, endPos - startPos + 1);
+	size_t len = endPos - startPos + 1;
+	if (len > 8) {
+		setError(102, startPos);
+		return 0;
+	}
+
+	const string valStr = e.substr(startPos, len);
 	return stoll(valStr);
 }
 

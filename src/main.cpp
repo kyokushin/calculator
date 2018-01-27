@@ -9,7 +9,7 @@ void printUsage() {
 		<< "***********************************************" << endl
 		<< "* Žg‚¢•û" << endl
 		<< "”Ž®‚ð“ü—Í‚µ‚½‚ ‚ÆEnter‚ð‰Ÿ‚·‚ÆŒvŽZŒ‹‰Ê‚ð•\Ž¦‚µ‚Ü‚·" << endl
-		<< "®”‚ÌŽl‘¥‰‰ŽZ‚ðŽg‚Á‚½ŒvŽZ‚ª‚Å‚«‚Ü‚·" << endl
+		<< "Å‘å8Œ…‚Ì®”‚ÌŽl‘¥‰‰ŽZ‚ðŽg‚Á‚½ŒvŽZ‚ª‚Å‚«‚Ü‚·" << endl
 		<< "‚Ü‚½()‚ðŽg‚Á‚½ŒvŽZ‚à‰Â”\‚Å‚·" << endl
 		<< "‹ó”’•¶Žš‚Í–³Ž‹‚³‚ê‚Ü‚·" << endl
 		<< "** “ü—Í—á" << endl
@@ -44,14 +44,24 @@ int main(int argc, char** argv) {
 		}
 		calc::Expression exp(e);
 		long long res = exp.calc();
+		cout << endl;
 		if (exp.hasError()) {
-			cout
-				<< "!! ŒvŽZ‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½ !!" <<  endl
-				<< e << endl;
-			for (int i = 0; i < exp.error.pos; i++) {
-				cout << " ";
+			string message;
+			if (exp.error.code == 102) {
+				message = "“ü—Í‚Å‚«‚é”’l‚Í8Œ…‚Ü‚Å‚Å‚·";
 			}
+			else {
+				message = "";
+			}
+			cout
+				<< "!! ŒvŽZ‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½ !!" << endl
+				<< e << endl;
+			for (int i = 0; i < exp.error.pos; i++) cout << " ";
 			cout << "^‚±‚±‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·" << endl;
+			if (message.size() > 0) {
+				for (int i = 0; i < exp.error.pos; i++) cout << " ";
+				cout << message << endl;
+			}
 		}
 		else if (exp.endPos + 1 != e.size()) {
 			cout
@@ -63,7 +73,7 @@ int main(int argc, char** argv) {
 			cout << "^‚±‚±‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·" << endl;
 		}
 		else {
-			cout << endl
+			cout
 				<< "== ŒvŽZŒ‹‰Ê ==" << endl
 				<< res << endl;
 		}
