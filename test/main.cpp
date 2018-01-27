@@ -212,6 +212,16 @@ namespace {
 	}
 
 	TEST(SignedDigits, calc_4) {
+		calc::Expression exp("-1383p");
+
+		long long res = exp.calcSignedDigits();
+
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(-1383, res);
+		ASSERT_EQ(4, exp.endPos);
+	}
+
+	TEST(SignedDigits, calc_5) {
 		calc::Expression exp("(-1383");
 		exp.startPos = 1;
 
@@ -381,6 +391,17 @@ namespace {
 		ASSERT_EQ(5, exp.endPos);
 	}
 
+	TEST(BracketExp, calc_3) {
+		calc::Expression exp("1234)");
+
+		long long res = exp.calcBracketExp();
+
+		ASSERT_EQ(0, exp.error.pos);
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(1234, res);
+		ASSERT_EQ(3, exp.endPos);
+	}
+
 	TEST(BracketExp, calc_failed_1) {
 		calc::Expression exp("(1234");
 
@@ -392,17 +413,6 @@ namespace {
 	}
 
 	TEST(BracketExp, calc_failed_2) {
-		calc::Expression exp("1234)");
-
-		long long res = exp.calcBracketExp();
-
-		ASSERT_EQ(0, exp.error.pos);
-		ASSERT_EQ(0, exp.error.code);
-		ASSERT_EQ(1234, res);
-		ASSERT_EQ(3, exp.endPos);
-	}
-
-	TEST(BracketExp, calc_failed_3) {
 		calc::Expression exp("*1234");
 
 		long long res = exp.calcBracketExp();
