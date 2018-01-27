@@ -8,7 +8,7 @@ namespace {
 
 	class ExpressionTest : public ::testing::Test {};
 
-	TEST(Epression,isDigits) {
+	TEST(Expression,isDigits) {
 		
 		string exp = "737";
 		ASSERT_TRUE(calc::isDigits(exp, 0));
@@ -29,95 +29,95 @@ namespace {
 		ASSERT_TRUE(calc::isSignedDigits(exp, 0));
 	}
 
-	TEST(Epression, isNotDigits) {
+	TEST(Expression, isNotDigits) {
 		string exp = "*(10)";
 		ASSERT_FALSE(calc::isDigits(exp, 0));
 	}
 
-	TEST(Epression, isPlusMinus_1) {
+	TEST(Expression, isPlusMinus_1) {
 		
 		string exp = "-(10)";
 		ASSERT_TRUE(calc::isPlusMinus(exp, 0));
 	}
 
-	TEST(Epression, isPlusMinus_2) {
+	TEST(Expression, isPlusMinus_2) {
 		
 		string exp = "-(10)";
 		ASSERT_TRUE(calc::isPlusMinus(exp, 0));
 	}
 
-	TEST(Epression, isNotPlusMinus) {
+	TEST(Expression, isNotPlusMinus) {
 		
 		string exp = "*(10)";
 		ASSERT_FALSE(calc::isPlusMinus(exp, 0));
 	}
-	TEST(Epression, isMulDiv_1) {
+	TEST(Expression, isMulDiv_1) {
 		
 		string exp = "*(10)";
 		ASSERT_TRUE(calc::isMulDiv(exp, 0));
 	}
 
-	TEST(Epression, isMulDiv_2) {
+	TEST(Expression, isMulDiv_2) {
 		
 		string exp = "/(10)";
 		ASSERT_TRUE(calc::isMulDiv(exp, 0));
 	}
 
-	TEST(Epression, isNotMulDiv) {
+	TEST(Expression, isNotMulDiv) {
 		
 		string exp = "-(10)";
 		ASSERT_FALSE(calc::isMulDiv(exp, 0));
 	}
 
-	TEST(Epression, isBracketStart) {
+	TEST(Expression, isBracketStart) {
 		
 		string exp = "(10)";
 		ASSERT_TRUE(calc::isBracketStart(exp, 0));
 	}
 
-	TEST(Epression, isNotBracketStart_1) {
+	TEST(Expression, isNotBracketStart_1) {
 		
 		string exp = "-(10)";
 		ASSERT_FALSE(calc::isBracketStart(exp, 0));
 	}
 
-	TEST(Epression, isNotBracketStart_2) {
+	TEST(Expression, isNotBracketStart_2) {
 		
 		string exp = ")(10)";
 		ASSERT_FALSE(calc::isBracketStart(exp, 0));
 	}
 
-	TEST(Epression, isBracketEnd) {
+	TEST(Expression, isBracketEnd) {
 		
 		string exp = ")*";
 		ASSERT_TRUE(calc::isBracketEnd(exp, 0));
 	}
 
-	TEST(Epression, isNotBracketEnd_1) {
+	TEST(Expression, isNotBracketEnd_1) {
 		
 		string exp = "*(10)";
 		ASSERT_FALSE(calc::isBracketEnd(exp, 0));
 	}
 
-	TEST(Epression, isNotBracketEnd_2) {
+	TEST(Expression, isNotBracketEnd_2) {
 		
 		string exp = "(10)";
 		ASSERT_FALSE(calc::isBracketEnd(exp, 0));
 	}
 
-	TEST(Epression, isEnd_1) {
+	TEST(Expression, isEnd_1) {
 		
 		string exp = "";
 		ASSERT_TRUE(calc::isEnd(exp, 0));
 	}
 
-	TEST(Epression, isEnd_2) {
+	TEST(Expression, isEnd_2) {
 
 		string exp = "aaaa";
 		ASSERT_TRUE(calc::isEnd(exp, 3));
 	}
 
-	TEST(Epression, isNotEnd) {
+	TEST(Expression, isNotEnd) {
 		
 		string exp = "*(10)";
 		ASSERT_FALSE(calc::isEnd(exp, 0));
@@ -131,7 +131,7 @@ namespace {
 
 		long long res = exp.calcDigits();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(1, res);
 		ASSERT_EQ(0, exp.endPos);
 	}
@@ -139,29 +139,31 @@ namespace {
 	TEST(Digits, calc_2) {
 		calc::Expression exp("1383");
 
-		long long res = exp.calc();
+		long long res = exp.calcDigits();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(1383, res);
 		ASSERT_EQ(3, exp.endPos);
 	}
 
 	TEST(Digits, calc_3) {
 		calc::Expression exp("(1383");
+		exp.startPos = 1;
 
-		long long res = exp.calc();
+		long long res = exp.calcDigits();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(1383, res);
 		ASSERT_EQ(4, exp.endPos);
 	}
 
 	TEST(Digits, calc_4) {
 		calc::Expression exp("123+1383");
+		exp.startPos = 4;
 
-		long long res = exp.calc();
+		long long res = exp.calcDigits();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(1383, res);
 		ASSERT_EQ(7, exp.endPos);
 	}
@@ -169,10 +171,10 @@ namespace {
 	TEST(Digits, calc_failed_1) {
 		calc::Expression exp("+1383");
 
-		long long res = exp.calc();
+		long long res = exp.calcDigits();
 
-		ASSERT_EQ(0, exp.errorPos);
-		ASSERT_NE(0, exp.error);
+		ASSERT_EQ(0, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
 		ASSERT_EQ(0, res);
 	}
 
@@ -182,9 +184,9 @@ namespace {
 	TEST(SignedDigits, calc_1) {
 		calc::Expression exp("1383");
 
-		long long res = exp.calc();
+		long long res = exp.calcSignedDigits();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(1383, res);
 		ASSERT_EQ(3, exp.endPos);
 	}
@@ -192,9 +194,9 @@ namespace {
 	TEST(SignedDigits, calc_2) {
 		calc::Expression exp("+1383");
 
-		long long res = exp.calc();
+		long long res = exp.calcSignedDigits();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(1383, res);
 		ASSERT_EQ(4, exp.endPos);
 	}
@@ -202,19 +204,20 @@ namespace {
 	TEST(SignedDigits, calc_3) {
 		calc::Expression exp("-1383");
 
-		long long res = exp.calc();
+		long long res = exp.calcSignedDigits();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(-1383, res);
 		ASSERT_EQ(4, exp.endPos);
 	}
 
 	TEST(SignedDigits, calc_4) {
 		calc::Expression exp("(-1383");
+		exp.startPos = 1;
 
-		long long res = exp.calc();
+		long long res = exp.calcSignedDigits();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(-1383, res);
 		ASSERT_EQ(5, exp.endPos);
 	}
@@ -222,10 +225,10 @@ namespace {
 	TEST(SignedDigits, calc_failed_1) {
 		calc::Expression exp("*1383");
 
-		long long res = exp.calc();
+		long long res = exp.calcSignedDigits();
 
-		ASSERT_EQ(0, exp.errorPos);
-		ASSERT_NE(0, exp.error);
+		ASSERT_EQ(0, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
 		ASSERT_EQ(0, res);
 	}
 
@@ -235,30 +238,60 @@ namespace {
 	TEST(PlusMinusExp, calc_1) {
 		calc::Expression exp("100+23");
 
-		long long res = exp.calc();
+		long long res = exp.calcPlusMinusExp();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(123, res);
 		ASSERT_EQ(5, exp.endPos);
 	}
 
 	TEST(PlusMinusExp, calc_2) {
+		calc::Expression exp("1000-23");
+
+		long long res = exp.calcPlusMinusExp();
+
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(977, res);
+		ASSERT_EQ(6, exp.endPos);
+	}
+
+	TEST(PlusMinusExp, calc_3) {
 		calc::Expression exp("1000+23*10+4");
 
-		long long res = exp.calc();
+		long long res = exp.calcPlusMinusExp();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(1234, res);
 		ASSERT_EQ(11, exp.endPos);
 	}
 
 	TEST(PlusMinusExp, calc_failed_1) {
-		calc::Expression exp("(1234");
+		calc::Expression exp("[1234");
 
-		long long res = exp.calc();
+		long long res = exp.calcPlusMinusExp();
 
-		ASSERT_EQ(0, exp.errorPos);
-		ASSERT_NE(0, exp.error);
+		ASSERT_EQ(0, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
+		ASSERT_EQ(0, res);
+	}
+
+	TEST(PlusMinusExp, calc_failed_2) {
+		calc::Expression exp("1234+");
+
+		long long res = exp.calcPlusMinusExp();
+
+		ASSERT_EQ(4, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
+		ASSERT_EQ(0, res);
+	}
+
+	TEST(PlusMinusExp, calc_failed_3) {
+		calc::Expression exp("1234-");
+
+		long long res = exp.calcPlusMinusExp();
+
+		ASSERT_EQ(4, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
 		ASSERT_EQ(0, res);
 	}
 
@@ -268,19 +301,29 @@ namespace {
 	TEST(MulDivExp, calc_1) {
 		calc::Expression exp("100*23");
 
-		long long res = exp.calc();
+		long long res = exp.calcMulDivExp();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(2300, res);
 		ASSERT_EQ(5, exp.endPos);
 	}
 
 	TEST(MulDivExp, calc_2) {
+		calc::Expression exp("100/2");
+
+		long long res = exp.calcMulDivExp();
+
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(50, res);
+		ASSERT_EQ(4, exp.endPos);
+	}
+
+	TEST(MulDivExp, calc_3) {
 		calc::Expression exp("100*234*2");
 
-		long long res = exp.calc();
+		long long res = exp.calcMulDivExp();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(46800, res);
 		ASSERT_EQ(8, exp.endPos);
 	}
@@ -288,10 +331,30 @@ namespace {
 	TEST(MulDivExp, calc_failed_1) {
 		calc::Expression exp("1234/0");
 
-		long long res = exp.calc();
+		long long res = exp.calcMulDivExp();
 
-		ASSERT_EQ(5, exp.errorPos);
-		ASSERT_NE(0, exp.error);
+		ASSERT_EQ(5, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
+		ASSERT_EQ(0, res);
+	}
+
+	TEST(MulDivExp, calc_failed_2) {
+		calc::Expression exp("1234*");
+
+		long long res = exp.calcMulDivExp();
+
+		ASSERT_EQ(4, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
+		ASSERT_EQ(0, res);
+	}
+
+	TEST(MulDivExp, calc_failed_3) {
+		calc::Expression exp("1234/");
+
+		long long res = exp.calcMulDivExp();
+
+		ASSERT_EQ(4, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
 		ASSERT_EQ(0, res);
 	}
 
@@ -301,9 +364,9 @@ namespace {
 	TEST(BracketExp, calc_1) {
 		calc::Expression exp("1234");
 
-		long long res = exp.calc();
+		long long res = exp.calcBracketExp();
 
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(1234, res);
 		ASSERT_EQ(3, exp.endPos);
 	}
@@ -311,40 +374,54 @@ namespace {
 	TEST(BracketExp, calc_2) {
 		calc::Expression exp("(1234)");
 
-		long long res = exp.calc();
+		long long res = exp.calcBracketExp();
 
 		ASSERT_EQ(1234, res);
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(5, exp.endPos);
 	}
 
 	TEST(BracketExp, calc_failed_1) {
 		calc::Expression exp("(1234");
 
-		long long res = exp.calc();
+		long long res = exp.calcBracketExp();
 
-		ASSERT_EQ(4, exp.errorPos);
-		ASSERT_NE(0, exp.error);
+		ASSERT_EQ(4, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
 		ASSERT_EQ(0, res);
 	}
 
 	TEST(BracketExp, calc_failed_2) {
+		calc::Expression exp("1234)");
+
+		long long res = exp.calcBracketExp();
+
+		ASSERT_EQ(0, exp.error.pos);
+		ASSERT_EQ(0, exp.error.code);
+		ASSERT_EQ(1234, res);
+		ASSERT_EQ(3, exp.endPos);
+	}
+
+	TEST(BracketExp, calc_failed_3) {
 		calc::Expression exp("*1234");
 
-		long long res = exp.calc();
+		long long res = exp.calcBracketExp();
 
-		ASSERT_EQ(0, exp.errorPos);
-		ASSERT_NE(0, exp.error);
+		ASSERT_EQ(0, exp.error.pos);
+		ASSERT_NE(0, exp.error.code);
 		ASSERT_EQ(0, res);
 	}
 
+	//****************
+	// Calculate
+	//****************
 	TEST(Calculate, calc_1) {
 		calc::Expression exp(" ( 1234 ) ");
 
 		long long res = exp.calc();
 
 		ASSERT_EQ(1234, res);
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(9, exp.endPos);
 	}
 
@@ -354,7 +431,7 @@ namespace {
 		long long res = exp.calc();
 
 		ASSERT_EQ(1234, res);
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(8, exp.endPos);
 	}
 
@@ -364,7 +441,7 @@ namespace {
 		long long res = exp.calc();
 
 		ASSERT_EQ(2471, res);
-		ASSERT_EQ(0, exp.error);
+		ASSERT_EQ(0, exp.error.code);
 		ASSERT_EQ(21, exp.endPos);
 	}
 
