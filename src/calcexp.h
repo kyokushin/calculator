@@ -29,7 +29,13 @@ namespace calc {
 		Expression(const std::string& e, size_t pos, int error);
 	public:
 		Expression(const std::string& e);
-		virtual long long calc();
+		long long calc();
+		long long calcDigits();
+		long long calcSignedDigits();
+		long long calcPlusMinusExp();
+		long long calcMulDivExp();
+		long long calcBracketExp();
+		void chomp();
 		void setError(int code, size_t pos = -1);
 		bool hasError();
 		const std::string e;
@@ -37,39 +43,6 @@ namespace calc {
 		size_t startPos = 0;
 		size_t endPos = 0;
 		Error error;
-	};
-
-	class Digits : public Expression {
-	protected:
-		Digits(const std::string& e, size_t pos, int error);
-	public:
-		Digits(const std::string& e, size_t pos);
-		Digits(const Digits& src);
-		long long calc() override;
-	};
-
-	class SignedDigits : public Digits {
-	public:
-		SignedDigits(const std::string& e, size_t pos);
-		long long calc() override;
-	};
-
-	class PlusMinusExp : public Expression {
-	public:
-		PlusMinusExp(const std::string& e, size_t pos);
-		long long calc() override;
-	};
-
-	class MulDivExp : public Expression {
-	public:
-		MulDivExp(const std::string& e, size_t pos);
-		long long calc() override;
-	};
-
-	class BracketExp : public Expression {
-	public:
-		BracketExp(const std::string& e, size_t pos);
-		long long calc() override;
 	};
 
 }

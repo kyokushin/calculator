@@ -127,9 +127,9 @@ namespace {
 	//Digits
 	//**********
 	TEST(Digits, calc_1) {
-		calc::Digits exp("1", 0);
+		calc::Expression exp("1");
 
-		long long res = exp.calc();
+		long long res = exp.calcDigits();
 
 		ASSERT_EQ(0, exp.error);
 		ASSERT_EQ(1, res);
@@ -137,7 +137,7 @@ namespace {
 	}
 
 	TEST(Digits, calc_2) {
-		calc::Digits exp("1383", 0);
+		calc::Expression exp("1383");
 
 		long long res = exp.calc();
 
@@ -147,7 +147,7 @@ namespace {
 	}
 
 	TEST(Digits, calc_3) {
-		calc::Digits exp("(1383", 1);
+		calc::Expression exp("(1383");
 
 		long long res = exp.calc();
 
@@ -157,7 +157,7 @@ namespace {
 	}
 
 	TEST(Digits, calc_4) {
-		calc::Digits exp("123+1383", 4);
+		calc::Expression exp("123+1383");
 
 		long long res = exp.calc();
 
@@ -167,7 +167,7 @@ namespace {
 	}
 
 	TEST(Digits, calc_failed_1) {
-		calc::Digits exp("+1383", 0);
+		calc::Expression exp("+1383");
 
 		long long res = exp.calc();
 
@@ -180,7 +180,7 @@ namespace {
 	//Signed
 	//**********
 	TEST(SignedDigits, calc_1) {
-		calc::SignedDigits exp("1383", 0);
+		calc::Expression exp("1383");
 
 		long long res = exp.calc();
 
@@ -190,7 +190,7 @@ namespace {
 	}
 
 	TEST(SignedDigits, calc_2) {
-		calc::SignedDigits exp("+1383", 0);
+		calc::Expression exp("+1383");
 
 		long long res = exp.calc();
 
@@ -200,7 +200,7 @@ namespace {
 	}
 
 	TEST(SignedDigits, calc_3) {
-		calc::SignedDigits exp("-1383", 0);
+		calc::Expression exp("-1383");
 
 		long long res = exp.calc();
 
@@ -210,7 +210,7 @@ namespace {
 	}
 
 	TEST(SignedDigits, calc_4) {
-		calc::SignedDigits exp("(-1383", 1);
+		calc::Expression exp("(-1383");
 
 		long long res = exp.calc();
 
@@ -220,7 +220,7 @@ namespace {
 	}
 
 	TEST(SignedDigits, calc_failed_1) {
-		calc::SignedDigits exp("*1383", 0);
+		calc::Expression exp("*1383");
 
 		long long res = exp.calc();
 
@@ -233,7 +233,7 @@ namespace {
 	//PlusMinus
 	//**********
 	TEST(PlusMinusExp, calc_1) {
-		calc::PlusMinusExp exp("100+23", 0);
+		calc::Expression exp("100+23");
 
 		long long res = exp.calc();
 
@@ -243,7 +243,7 @@ namespace {
 	}
 
 	TEST(PlusMinusExp, calc_2) {
-		calc::PlusMinusExp exp("1000+23*10+4", 0);
+		calc::Expression exp("1000+23*10+4");
 
 		long long res = exp.calc();
 
@@ -253,7 +253,7 @@ namespace {
 	}
 
 	TEST(PlusMinusExp, calc_failed_1) {
-		calc::PlusMinusExp exp("(1234", 0);
+		calc::Expression exp("(1234");
 
 		long long res = exp.calc();
 
@@ -266,7 +266,7 @@ namespace {
 	//MulDiv
 	//**********
 	TEST(MulDivExp, calc_1) {
-		calc::MulDivExp exp("100*23", 0);
+		calc::Expression exp("100*23");
 
 		long long res = exp.calc();
 
@@ -276,7 +276,7 @@ namespace {
 	}
 
 	TEST(MulDivExp, calc_2) {
-		calc::MulDivExp exp("100*234*2", 0);
+		calc::Expression exp("100*234*2");
 
 		long long res = exp.calc();
 
@@ -286,7 +286,7 @@ namespace {
 	}
 
 	TEST(MulDivExp, calc_failed_1) {
-		calc::MulDivExp exp("1234/0", 0);
+		calc::Expression exp("1234/0");
 
 		long long res = exp.calc();
 
@@ -299,7 +299,7 @@ namespace {
 	//Bracket
 	//**********
 	TEST(BracketExp, calc_1) {
-		calc::BracketExp exp("1234", 0);
+		calc::Expression exp("1234");
 
 		long long res = exp.calc();
 
@@ -309,7 +309,7 @@ namespace {
 	}
 
 	TEST(BracketExp, calc_2) {
-		calc::BracketExp exp("(1234)", 0);
+		calc::Expression exp("(1234)");
 
 		long long res = exp.calc();
 
@@ -319,7 +319,7 @@ namespace {
 	}
 
 	TEST(BracketExp, calc_failed_1) {
-		calc::BracketExp exp("(1234", 0);
+		calc::Expression exp("(1234");
 
 		long long res = exp.calc();
 
@@ -329,7 +329,7 @@ namespace {
 	}
 
 	TEST(BracketExp, calc_failed_2) {
-		calc::BracketExp exp("*1234", 0);
+		calc::Expression exp("*1234");
 
 		long long res = exp.calc();
 

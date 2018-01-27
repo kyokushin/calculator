@@ -89,14 +89,9 @@ long long calc::Expression::calc() {
 		return 0;
 	}
 
-	PlusMinusExp exp(e, 0);
-	long long res = exp.calc();
-	error = exp.error;
-	if (exp.endPos + 1 < e.size()) {
-		endPos = skip(e, exp.endPos + 1);
-	}
-	else {
-		endPos = exp.endPos;
+	long long res = calcPlusMinusExp();
+	if (endPos + 1 < e.size()) {
+		endPos = skip(e, endPos + 1);
 	}
 	return res;
 }
@@ -110,21 +105,10 @@ bool calc::Expression::hasError() {
 	return error.code != 0;
 }
 
-calc::Digits::Digits(const string& e, size_t pos)
-	:Expression(e, pos, 100)
-{}
-
-calc::Digits::Digits(const calc::Digits& src)
-	: Expression(src.e, src.startPos, 100)
-{}
-
-calc::Digits::Digits(const string& e, size_t pos, int error)
-	: Expression(e, pos, error)
-{}
-
-long long calc::Digits::calc() {
+long long calc::Expression::calcDigits() {
+	chomp();
 	if (e[startPos] < '0' || '9' < e[startPos]) {
-		setError(1, startPos);
+		setError(101, startPos);
 		return 0;
 	}
 	size_t end = e.find_first_not_of("0123456789", startPos);
@@ -138,42 +122,33 @@ long long calc::Digits::calc() {
 	return stoll(valStr);
 }
 
-calc::SignedDigits::SignedDigits(const string& e, size_t pos)
-	:Digits(e, pos, 200)
-{}
-long long calc::SignedDigits::calc() {
+long long calc::Expression::calcSignedDigits() {
 
+	chomp();
 	if (isDigits(e, startPos)) {
-		Digits val(e, startPos);
-		auto res = val.calc();
-		if (val.hasError()) {
-			error = val.error;
+		auto res = calcDigits();
+		if (hasError()) {
 			return 0;
 		}
-		endPos = val.endPos;
 		return res;
 	}
 
 	const char c = e[skip(e, startPos)];
 	if (isSignedDigits(e, startPos)) {
 		if (c == '+') {
-			Digits val(e, startPos + 1);
-			auto res = val.calc();
-			if (val.hasError()) {
-				error = val.error;
+			startPos++;
+			auto res = calcDigits();
+			if (hasError()) {
 				return 0;
 			}
-			endPos = val.endPos;
 			return res;
 		}
 		else if (c == '-') {
-			Digits val(e, startPos + 1);
-			auto res = val.calc();
-			if (val.hasError()) {
-				error = val.error;
+			startPos++;
+			auto res = calcDigits();
+			if (hasError()) {
 				return 0;
 			}
-			endPos = val.endPos;
 			return -1 * res;
 		}
 		else {
@@ -182,150 +157,131 @@ long long calc::SignedDigits::calc() {
 		}
 	}
 
-	setError(2, startPos);
+	setError(202, startPos);
 	return 0;
 }
 
-calc::PlusMinusExp::PlusMinusExp(const string& e, size_t pos)
-	:Expression(e, pos, 300)
-{}
-long long calc::PlusMinusExp::calc() {
+long long calc::Expression::calcPlusMinusExp() {
 
-
-	MulDivExp exp0(e, startPos);
-	auto val0 = exp0.calc();
-	if (exp0.hasError()) {
-		error = exp0.error;
+	chomp();
+	startPos = skip(e, startPos);
+	auto val0 = calcMulDivExp();
+	if (hasError()) {
 		return 0;
 	}
 
-	if (exp0.endPos + 1 == e.size()) {
-		endPos = exp0.endPos;
+	if (endPos + 1 == e.size()) {
 		return val0;
 	}
 
-	if (e.size() < exp0.endPos + 1) {
-		setError(1, exp0.endPos);
+	if (e.size() < endPos + 1) {
+		setError(301, endPos);
 		return 0;
 	}
 
-	auto expPos = skip(e, exp0.endPos + 1);
-	endPos = skip(e, exp0.endPos);
+	auto expPos = skip(e, endPos + 1);
+	endPos = skip(e, endPos);
 	auto c = e[expPos];
 	auto res = val0;
 	for (; ('+' == c || '-' == c) && expPos < e.size();
 		expPos = skip(e, endPos + 1), c = e[expPos]) {
 
 		if ('+' == c) {
-			MulDivExp exp1(e, expPos + 1);
-			auto val1 = exp1.calc();
-			if (exp1.hasError()) {
-				error = exp1.error;
+			startPos = expPos + 1;
+			auto val1 = calcMulDivExp();
+			if (hasError()) {
 				return 0;
 			}
 
 			res += val1;
-			endPos = exp1.endPos;
 		}
 
-		if ('-' == exp0.endPos + 1) {
-			MulDivExp exp1(e, expPos + 1);
-			auto val1 = exp1.calc();
-			if (exp1.hasError()) {
-				error = exp1.error;
+		if ('-' == c) {
+			startPos = expPos + 1;
+			auto val1 = calcMulDivExp();
+			if (hasError()) {
 				return 0;
 			}
 
 			res -= val1;
-			endPos = exp1.endPos;
 		}
 	}
 	return res;
 
 }
-calc::MulDivExp::MulDivExp(const string& e, size_t pos)
-	: Expression(e, pos, 400)
-{}
-long long calc::MulDivExp::calc() {
+long long calc::Expression::calcMulDivExp() {
 
-	BracketExp exp0(e, startPos);
-	auto val0 = exp0.calc();
-	if (exp0.hasError()) {
-		error = exp0.error;
+	chomp();
+	auto val0 = calcBracketExp();
+	if (hasError()) {
 		return 0;
 	}
 
-	if (e.size() <= exp0.endPos + 1) {
-		endPos = exp0.endPos;
+	if (e.size() <= endPos + 1) {
 		return val0;
 	}
 
-	auto expPos = skip(e, exp0.endPos + 1);
-	endPos = exp0.endPos;
+	auto expPos = skip(e, endPos + 1);
 	auto c = e[expPos];
 	auto res = val0;
 	for (; ('*' == c || '/' == c) && expPos < e.size();
 		expPos = skip(e, endPos + 1), c = e[expPos]) {
 		if ('*' == c) {
-			BracketExp exp1(e, expPos + 1);
-			auto val1 = exp1.calc();
-			if (exp1.hasError()) {
-				error = exp1.error;
+			startPos = expPos + 1;
+			auto val1 = calcBracketExp();
+			if (hasError()) {
 				return 0;
 			}
 
 			res *= val1;
-			endPos = exp1.endPos;
 		}
 
 		if ('/' == c) {
-			BracketExp exp1(e, expPos + 1);
-			auto val1 = exp1.calc();
-			if (exp1.hasError()) {
-				error = exp1.error;
+			startPos = expPos + 1;
+			auto val1 = calcBracketExp();
+			if (hasError()) {
 				return 0;
 			}
 			if (val1 == 0) {
-				setError(1, exp1.startPos);
+				setError(401, startPos);
 				return 0;
 			}
 
 			res /= val1;
-			endPos = exp1.endPos;
 		}
 	}
 
 	return res;
 }
 
-calc::BracketExp::BracketExp(const string& e, size_t pos)
-	: Expression(e, pos, 500)
-{}
-long long calc::BracketExp::calc() {
+long long calc::Expression::calcBracketExp() {
+
+	chomp();
 	if (isSignedDigits(e, startPos)) {
-		SignedDigits digits(e, startPos);
-		auto res = digits.calc();
-		endPos = digits.endPos;
+		auto res = calcSignedDigits();
 		return res;
 	}
 
 	if ('(' == e[skip(e, startPos)]) {
-		PlusMinusExp exp(e, startPos + 1);
-		auto val = exp.calc();
-		if (exp.hasError()) {
-			error = exp.error;
+		startPos++;
+		auto val = calcPlusMinusExp();
+		if (hasError()) {
 			return 0;
 		}
 
-		if (exp.endPos + 1 < e.size() && ')' == e[skip(e, exp.endPos + 1)]) {
-			endPos = skip(e, exp.endPos + 1);
+		if (endPos + 1 < e.size() && ')' == e[skip(e, endPos + 1)]) {
+			endPos = skip(e, endPos + 1);
 			return val;
 		}
 
-		setError(1, exp.endPos);
+		setError(501, endPos);
 		return 0;
 	}
 
 	setError(2, startPos);
 	return 0;
+}
+
+void calc::Expression::chomp() {
+	startPos = skip(e, startPos);
 }
