@@ -18,7 +18,11 @@ void printUsage() {
 		<< "10/(2*4)+2" << endl
 		<< "** 注意" << endl
 		<< "* 終了方法" << endl
+#if defined(_WIN32)
 		<< "Ctrl + z を入力後、Enterを押す" << endl
+#elif defined(linux)
+		<< "Ctrl + d を入力" << endl
+#endif
 		<< "* 使い方の表示"
 		<< "h を入力後、Enterを押す" << endl
 		<< "***********************************************" << endl
@@ -31,7 +35,11 @@ int main(int argc, char** argv) {
 		cout
 			<< "++++++++++++++++++++++++++++++++++++++" << endl
 			<< "数式を入力後、Enterを押してください" << endl
+#if defined(_WIN32)
 			<< "終了する場合はCtrl+zを入力後、Enterを押してください" << endl
+#elif defined(linux)
+			<< "終了する場合はCtrl+dを入力してください" << endl
+#endif
 			<< "詳しい使い方はhを入力後、Enterを押してください" << endl;
 
 		string e;
