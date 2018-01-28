@@ -40,8 +40,8 @@ namespace calc {
 		bool hasError();
 		const std::string e;
 		const int baseError;
-		size_t startPos = 0;
-		size_t endPos = 0;
+		size_t startPos;
+		size_t endPos;
 		Error error;
 	};
 
