@@ -1,11 +1,4 @@
-find_package(GTest QUIET)
-if(NOT ${GTEST_FOUND})
-	include(ExternalProject)
-	ExternalProject_Add(googletest URL https://github.com/google/googletest/archive/release-1.8.0.zip INSTALL_COMMAND "" LOG_DOWNLOAD ON LOG_CONFIGURE ON LOG_BUILD ON)
-	ExternalProject_Get_Property(googletest source_dir)
-	set(GTEST_INCLUDE_DIR ${source_dir}/include)
-	set(GTEST_BOTH_LIBRARIES gtest gtest_main)
-endif()
+find_package(GTest REQUIRED)
 
 include_directories(${GTEST_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/src")
 add_executable(calcTest main.cpp)
