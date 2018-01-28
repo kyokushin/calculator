@@ -1,8 +1,12 @@
 find_package(GTest REQUIRED)
+if(NOT ${GTEST_FOUND})
+	ExternalProject_Add(googletest URL https://github.com/google/googletest/releases/tag/release-1.8.0 INSTALL_COMMAND "" LOG_DOWNLOAD ON LOG_CONFIGURE ON LOG_BUILD ON)
+	ExternalProject_Get_Property(googletest source_dir)
+	set(GTEST_INCLUDE_DIR ${source_dir}/include)
+	set(GTEST_BOTH_LIBRARIES gtest gtest_main)
+endif()
+
 include_directories(${GTEST_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/src")
-
-message(STATUS "${PROJECT_SOURCE_DIR}/src")
-
 add_executable(calcTest main.cpp)
 target_link_libraries(calcTest ${GTEST_BOTH_LIBRARIES} calcexp)
 set_target_properties(calcTest PROPERTIES DEBUG_POSTFIX d)
